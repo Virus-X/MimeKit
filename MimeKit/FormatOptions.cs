@@ -74,6 +74,7 @@ namespace MimeKit {
 		bool allowMixedHeaderCharsets;
 		NewLineFormat newLineFormat;
 		bool international;
+	    bool forceFullHeaderEncoding;
 
 		/// <summary>
 		/// The default formatting options.
@@ -203,24 +204,45 @@ namespace MimeKit {
 			}
 		}
 
-		/// <summary>
-		/// The method to use for encoding Content-Type and Content-Disposition parameter values.
+        /// <summary>
+		/// Gets or sets whether the formatter should encode all words in headers, if encoding is needed.
 		/// </summary>
 		/// <remarks>
-		/// <para>The method to use for encoding Content-Type and Content-Disposition parameter
-		/// values when the <see cref="Parameter.EncodingMethod"/> is set to
-		/// <see cref="MimeKit.ParameterEncodingMethod.Default"/>.</para>
-		/// <para>The MIME specifications specify that the proper method for encoding Content-Type
-		/// and Content-Disposition parameter values is the method described in
-		/// <a href="https://tools.ietf.org/html/rfc2231">rfc2231</a>. However, it is common for
-		/// some older email clients to improperly encode using the method described in
-		/// <a href="https://tools.ietf.org/html/rfc2047">rfc2047</a> instead.</para>
+		/// When this option is enabled, the MIME formatter will encode all tokens
+		/// if at least one token should be encoded. This is actually a workaround to Gmail encoding parser issue,
+		/// that seems to ignore non-encoded parts of header if encoding is used.
 		/// </remarks>
-		/// <value>The parameter encoding method that will be used.</value>
-		/// <exception cref="System.ArgumentOutOfRangeException">
-		/// <paramref name="value"/> is not a valid value.
-		/// </exception>
-		public ParameterEncodingMethod ParameterEncodingMethod {
+		/// <value><c>true</c> if the formatter should encode all words in headers; otherwise, <c>false</c>.</value>
+		public bool ForceFullHeaderEncoding
+        {
+            get { return forceFullHeaderEncoding; }
+            set
+            {
+                if (this == Default)
+                    throw new InvalidOperationException("The default formatting options cannot be changed.");
+
+                forceFullHeaderEncoding = value;
+            }
+        }
+
+        /// <summary>
+        /// The method to use for encoding Content-Type and Content-Disposition parameter values.
+        /// </summary>
+        /// <remarks>
+        /// <para>The method to use for encoding Content-Type and Content-Disposition parameter
+        /// values when the <see cref="Parameter.EncodingMethod"/> is set to
+        /// <see cref="MimeKit.ParameterEncodingMethod.Default"/>.</para>
+        /// <para>The MIME specifications specify that the proper method for encoding Content-Type
+        /// and Content-Disposition parameter values is the method described in
+        /// <a href="https://tools.ietf.org/html/rfc2231">rfc2231</a>. However, it is common for
+        /// some older email clients to improperly encode using the method described in
+        /// <a href="https://tools.ietf.org/html/rfc2047">rfc2047</a> instead.</para>
+        /// </remarks>
+        /// <value>The parameter encoding method that will be used.</value>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <paramref name="value"/> is not a valid value.
+        /// </exception>
+        public ParameterEncodingMethod ParameterEncodingMethod {
 			get { return parameterEncodingMethod; }
 			set {
 				if (this == Default)

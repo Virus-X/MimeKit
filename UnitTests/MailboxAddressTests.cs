@@ -377,5 +377,29 @@ namespace UnitTests {
 
 			AssertParse (expected);
 		}
-	}
+
+        [Test]
+        public void TestForceFullHeaderEncoding()
+        {            
+            var mailbox = new MailboxAddress("Тестер from acme.com", "rusty@final-destination.com");
+            var options = new FormatOptions
+            {                
+                ForceFullHeaderEncoding = true
+            };
+
+            var encoded = mailbox.ToString (options, true);
+            Assert.IsFalse(encoded.Contains("acme"));
+            
+            var decoded = MailboxAddress.Parse(
+                new ParserOptions
+                {
+                    AddressParserComplianceMode = RfcComplianceMode.Strict,
+                    ParameterComplianceMode = RfcComplianceMode.Strict,
+                    Rfc2047ComplianceMode = RfcComplianceMode.Strict
+                }, encoded);
+
+            Assert.AreEqual(mailbox.Name, decoded.Name);
+            Assert.AreEqual(mailbox.Address, decoded.Address);            
+        }
+    }
 }

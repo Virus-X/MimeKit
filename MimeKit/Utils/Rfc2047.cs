@@ -27,6 +27,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 
 #if PORTABLE
 using Encoding = Portable.Text.Encoding;
@@ -1216,6 +1217,11 @@ namespace MimeKit.Utils {
 
 			if (word.ByteCount > 0)
 				words.Add (word);
+
+		    if (options.ForceFullHeaderEncoding && words.Any (x => x.Type == WordType.EncodedWord))
+		    {
+		        words.ForEach (w => w.Type = WordType.EncodedWord);
+		    }
 
 			return words;
 		}
